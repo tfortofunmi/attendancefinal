@@ -1,0 +1,18 @@
+Flask
+Flask-SQLAlchemy
+Flask-WTF
+Jinja2
+MarkupSafe
+# numpy==2.2.3
+# opencv-python==4.11.0.86
+# PyQt5==5.15.11
+# PyQt5-Qt5==5.15.2
+# PyQt5_sip==12.17.0
+python-dotenv
+SQLAlchemy
+Werkzeug
+WTForms
+flask-login
+email-validator
+pydantic-settings
+wtforms-sqlalchemy
