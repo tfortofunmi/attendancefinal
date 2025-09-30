@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Create Class{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Create a New Class Session</h2>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.course_code.label(class="form-label") }}
+      {{ form.course_code(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.title.label(class="form-label") }}
+      {{ form.title(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.time.label(class="form-label") }}
+      {{ form.time(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.department.label(class="form-label") }}
+      {{ form.department(class="form-select") }}
+    </div>
+    <div class="mb-3">
+      {{ form.level.label(class="form-label") }}
+      {{ form.level(class="form-select") }}
+    </div>
+    <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+  </form>
+</div>
+{% endblock %}

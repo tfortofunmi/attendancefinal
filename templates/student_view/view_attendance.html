@@ -1,0 +1,120 @@
+{% extends 'student_view/student_dashboard.html' %}
+
+{% block title %}Attendance Records{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="topbar">📊 Attendance Summary</div>
+
+<!-- Filters -->
+<form method="get" class="filters">
+  <select name="semester" class="form-select" style="width:auto;display:inline-block;">
+    <option value="">All Semesters</option>
+    {% for sem in semesters %}
+      <option value="{{ sem.id }}" {% if request.args.get('semester') == sem.id|string %}selected{% endif %}>{{ sem.name }}</option>
+    {% endfor %}
+  </select>
+  
+  <select name="course" class="form-select" style="width:auto;display:inline-block;">
+    <option value="">All Courses</option>
+    {% for course in courses %}
+      <option value="{{ course.id }}" {% if request.args.get('course') == course.id|string %}selected{% endif %}>{{ course.name }}</option>
+    {% endfor %}
+  </select>
+  
+  <input type="date" name="date" value="{{ request.args.get('date', '') }}" class="form-control" style="width:auto;display:inline-block;">
+  
+  <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<!-- Attendance Chart -->
+<div class="chart-container mb-4" style="max-width:300px; margin:auto;">
+  <canvas id="attendanceChart"></canvas>
+</div>
+
+
+<!-- Summary Cards -->
+<div class="summary">
+  <div class="card">
+    <div class="card-label">📄 Total Records</div>
+    <div class="card-value">{{ records|length }}</div>
+  </div>
+  <div class="card">
+    <div class="card-label">✅ Present</div>
+    <div class="card-value">{{ present_count }}</div>
+  </div>
+  <div class="card">
+    <div class="card-label">❌ Absent</div>
+    <div class="card-value">{{ absent_count }}</div>
+  </div>
+</div>
+
+<!-- Attendance Table -->
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Course</th>
+      <th>Date</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in records %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ r.course.name }}</td>
+      <td>{{ r.timestamp.date() }}</td>
+      <td class="{% if r.status == 'Present' %}text-success{% else %}text-danger{% endif %} fw-bold">
+        {{ r.status }}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" class="text-center">No attendance records found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let presentCount = {{ present_count or 0 }};
+    let absentCount = {{ absent_count or 0 }};
+    // Ensure at least one non-zero value so chart renders
+    if (presentCount + absentCount === 0) {
+      presentCount = 1;
+      absentCount = 1;
+    }
+    
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Present', 'Absent'],
+        datasets: [{
+          data: [presentCount, absentCount],
+          backgroundColor: ['#0d6efd', '#f44336'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed;
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

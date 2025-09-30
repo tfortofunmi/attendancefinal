@@ -1,0 +1,234 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manage Students{% endblock %}
+
+{% block content %}
+<style>
+  h2, h3, h4 {
+    color: #1e3a8a;
+    margin-bottom: 16px;
+  }
+
+  form {
+    background: #f9fbff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+  }
+
+  form p {
+    margin-bottom: 15px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+
+  select[multiple] {
+    height: auto;
+    min-height: 120px;
+    background-color: #f0f6ff;
+  }
+
+  button[type="submit"] {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #2563eb;
+  }
+
+  small {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  hr {
+    margin: 40px 0;
+    border: none;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  div[style*="border:1px solid"] {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+
+  ul {
+    padding-left: 20px;
+    margin: 10px 0;
+  }
+</style>
+
+<h2>Manage Students</h2>
+
+<!-- Add New Student -->
+<h3>Add New Student</h3>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mt-3">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% endwith %}
+
+      {% for field in form %}
+      {% for error in field.errors %}
+        <div class="alert alert-danger">{{ error }}</div>
+      {% endfor %}
+    {% endfor %}
+<form method="post" action="{{ url_for('admin.manage_students') }}">
+    {{ form.hidden_tag() }}
+    <input type="hidden" name="action" value="add_student">
+
+    <p>{{ form.name.label }}<br>{{ form.name(size=40) }}</p>
+    <p>{{ form.email.label }}<br>{{ form.email(size=40) }}</p>
+    <p>{{ form.password.label }}<br>{{ form.password(size=40) }}</p>
+    <p>{{ form.student_number.label }}<br>{{ form.student_number(size=40) }}</p>
+    <p>
+        {{ form.level_id.label }}<br>
+        <select name="level_id" required>
+            <option value="">-- Select Level --</option>
+            {% for level in levels %}
+                <option value="{{ level.id }}">{{ level.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        {{ form.faculty_id.label }}<br>
+        <select name="faculty_id" id="facultySelect" required>
+            <option value="">-- Select Faculty --</option>
+           
+            {% for faculty in faculties %}
+                <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <p>
+        {{ form.department_id.label }}<br>
+        <select name="department_id" id="departmentSelect" required>
+            <option value="">-- Select Department --</option>
+            
+            {% for dept in departments %}
+                <option value="{{ dept.id }}" data-faculty="{{ dept.faculty_id }}">{{ dept.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <p>
+        {{ form.course_ids.label }}<br>
+        <select name="course_ids" id="courseSelect" multiple size="5" required>
+            {% for course in courses %}
+                <option value="{{ course.id }}" data-department="{{ course.department_id }}">{{ course.name }}</option>
+            {% endfor %}
+        </select>
+        <br><small>Click to select multiple</small>
+    </p>
+
+    <p>{{ form.submit() }}</p>
+</form>
+
+<hr>
+
+<!-- Bulk Upload Students (CSV) -->
+<h3>Bulk Upload Students (CSV)</h3>
+<form method="post" action="{{ url_for('admin.manage_students') }}" enctype="multipart/form-data">
+    <input type="hidden" name="action" value="upload_csv">
+    <input type="file" name="csv_file" accept=".csv" required>
+    <button type="submit">Upload CSV</button>
+    <br><small>CSV columns: name, email, password, student_number, level_id, faculty_id, department_id</small>
+</form>
+<hr>
+
+<!-- List All Students and Reassign Courses -->
+<h3>Existing Students</h3>
+{% for student in students %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+    <strong>{{ student.name }}</strong><br>
+    Email: {{ student.email }}<br>
+    Student Number: {{ student.student_number }}<br>
+    Faculty: {{ student.faculty.name if student.faculty else "N/A" }}<br>
+    Department: {{ student.department.name if student.department else "N/A" }}<br>
+    <strong>Current Courses:</strong>
+    <ul>
+        {% for c in student.courses %}
+            <li>{{ c.name }}</li>
+        {% else %}
+            <li>None</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Reassign Courses</h4>
+    <form method="post" action="{{ url_for('admin.manage_students') }}">
+        <input type="hidden" name="action" value="reassign_courses">
+        <input type="hidden" name="student_id" value="{{ student.id }}">
+        <select name="course_ids" multiple size="5" required>
+            {% for course in courses %}
+                <option value="{{ course.id }}"
+                        {% if course in student.courses %}selected{% endif %}
+                        data-department="{{ course.department_id }}">
+                    {{ course.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <br><small>Hold Ctrl (or Cmd) to select multiple</small><br>
+        <button type="submit">Update Courses</button>
+    </form>
+</div>
+{% endfor %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const facultySelect = document.getElementById('facultySelect');
+    const departmentSelect = document.getElementById('departmentSelect');
+    const courseSelect = document.getElementById('courseSelect');
+
+    const allDeptOptions = Array.from(departmentSelect.options);
+    const allCourseOptions = Array.from(courseSelect.options);
+    departmentSelect.innerHTML = '<option value="">-- Select Department --</option>';
+    courseSelect.innerHTML = '';
+
+    facultySelect.addEventListener('change', function() {
+        const selectedFaculty = this.value;
+        departmentSelect.innerHTML = '<option value="">-- Select Department --</option>';
+        allDeptOptions.forEach(option => {
+            if (option.getAttribute('data-faculty') === selectedFaculty) {
+                departmentSelect.appendChild(option.cloneNode(true));
+            }
+        });
+        courseSelect.innerHTML = '';
+    });
+
+    departmentSelect.addEventListener('change', function() {
+        const selectedDept = this.value;
+        courseSelect.innerHTML = '';
+        allCourseOptions.forEach(option => {
+            if (option.getAttribute('data-department') === selectedDept) {
+                courseSelect.appendChild(option.cloneNode(true));
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance System</title>
+  <link rel="stylesheet" href="/static/css/index.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #004AAD, #007BFF);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 40px;
+      margin-right: 10px;
+    }
+
+    .logo h2 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: rgb(253, 254, 255);
+      font-size: 3rem;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 4px solid rgba(150, 151, 150, 0.75);
+      animation: typewriter 5s steps(40) infinite;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      animation: fadeInUp 1s ease;
+    }
+
+    .start-btn {
+      background: white;
+      color: #004AAD;
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+      margin: 0.5rem;
+    }
+
+    .start-btn:hover {
+      background: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes typewriter {
+      0% { width: 0; }
+      50% { width: 100%; }
+      100% { width: 0; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="/static/rectem logo.jpg" alt="School Logo" />
+      <h2>RECTEM</h2>
+    </div>
+  </header>
+
+  <main>
+    <h1>Welcome to RECTEM Attendance System</h1>
+    <p>One portal for all attendance records.</p>
+    <a href="{{ url_for('user.login') }}">
+      <button class="start-btn">Get Started</button>
+    </a>
+    <a href="{{ url_for('admin.login') }}">
+      <button class="start-btn">Admin Login</button>
+    </a>
+  </main>
+
+  <footer>
+    &copy; 2025 RECTEM | Designed by Tofunmi
+  </footer>
+</body>
+</html>

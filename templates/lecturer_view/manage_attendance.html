@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Manage Attendance Records{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/dashboard2.css">
+  <link rel="stylesheet" href="/static/css/attendancerecord.css">
+  <style>
+    .status-present { color: green; font-weight: bold; }
+    .status-absent { color: red; font-weight: bold; }
+    .filters select, .filters input.search {
+      padding: 8px;
+      margin-right: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .summary .card {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      gap: 12px;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .card-icon {
+      font-size: 1.5rem;
+    }
+    .btn-export, .btn-print {
+      background: #004AAD;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+{% endblock %}
+
+{% block sidebar %}
+  <a href="{{ url_for('user.dashboard') }}"><i class="fa fa-windows"></i> Dashboard</a>
+  <a href="{{ url_for('user.mark_attendance') }}"><i class="fa fa-check-circle-o"></i> Mark Attendance</a>
+  <a class="active" href="{{ url_for('user.attendance_record') }}"><i class="fa fa-eye"></i> Attendance Records</a>
+  <a href="{{ url_for('user.student_list') }}"><i class="fa fa-list-ul"></i> Students List</a>
+  <a href="{{ url_for('user.notifications') }}"><i class="fa fa-signal"></i> Notifications</a>
+  <a href="{{ url_for('user.settings') }}"><i class="fa fa-cog"></i> Settings</a>
+{% endblock %}
+
+{% block content %}
+  <div class="topbar mb-3"><h2>📊 Attendance Records</h2></div>
+
+  <div class="filters mb-3">
+    <select id="filterDept">
+      <option value="">All Departments</option>
+      {% for dept in departments %}
+        <option value="{{ dept.name }}">{{ dept.name }}</option>
+      {% endfor %}
+    </select>
+    <select id="filterLevel">
+      <option value="">All Levels</option>
+      {% for level in levels %}
+        <option value="{{ level }}">{{ level }}</option>
+      {% endfor %}
+    </select>
+    <select id="filterCourse">
+      <option value="">All Courses</option>
+      {% for course in courses %}
+        <option value="{{ course.name }}">{{ course.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="date" id="filterDate" />
+    <input type="text" id="filterSearch" class="search" placeholder="Search student..." />
+  </div>
+
+  <div class="summary mb-3">
+    <div class="card">
+      <div class="card-icon">📄</div>
+      <div>
+        <div class="card-label">Total Records</div>
+        <div class="card-value" id="totalRecords">0</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">✅</div>
+      <div>
+        <div class="card-label">Total Present</div>
+        <div class="card-value" id="totalPresent">0</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">❌</div>
+      <div>
+        <div class="card-label">Total Absent</div>
+        <div class="card-value" id="totalAbsent">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3 d-flex gap-2">
+    <button class="btn-export">Export CSV</button>
+    <button class="btn-print">Print View</button>
+  </div>
+
+  <table id="attendanceTable" class="table table-striped bg-white rounded shadow-sm">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Matric No.</th>
+        <th>Department</th>
+        <th>Level</th>
+        <th>Course</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      {% for record in attendance_records %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ record.student.name }}</td>
+          <td>{{ record.student.student_number }}</td>
+          <td>{{ record.student.department.name }}</td>
+          <td>{{ record.student.level }}</td>
+          <td>{{ record.course.name }}</td>
+          <td>{{ record.timestamp.strftime('%Y-%m-%d') }}</td>
+          <td class="status-{{ record.status.lower() }}">{{ record.status }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="8" class="text-center text-muted">No attendance data available.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    const filters = ['filterDept', 'filterLevel', 'filterCourse', 'filterDate', 'filterSearch'];
+    const rows = document.querySelectorAll('#tableBody tr');
+
+    function updateSummary() {
+      let total = 0, present = 0, absent = 0;
+      rows.forEach(row => {
+        if (row.style.display !== 'none') {
+          total++;
+          const status = row.querySelector('td:last-child');
+          if (status.classList.contains('status-present')) present++;
+          else if (status.classList.contains('status-absent')) absent++;
+        }
+      });
+      document.getElementById('totalRecords').textContent = total;
+      document.getElementById('totalPresent').textContent = present;
+      document.getElementById('totalAbsent').textContent = absent;
+    }
+
+    function applyFilters() {
+      const dept = document.getElementById('filterDept').value.toLowerCase();
+      const level = document.getElementById('filterLevel').value.toLowerCase();
+      const course = document.getElementById('filterCourse').value.toLowerCase();
+      const date = document.getElementById('filterDate').value;
+      const search = document.getElementById('filterSearch').value.toLowerCase();
+
+      rows.forEach(row => {
+        const [ , name, matric, deptCell, levelCell, courseCell, dateCell ] = row.querySelectorAll('td');
+        const match =
+          (!dept || deptCell.textContent.toLowerCase() === dept) &&
+          (!level || levelCell.textContent.toLowerCase() === level) &&
+          (!course || courseCell.textContent.toLowerCase() === course) &&
+          (!date || dateCell.textContent === date) &&
+          (!search || name.textContent.toLowerCase().includes(search) || matric.textContent.toLowerCase().includes(search));
+
+        row.style.display = match ? '' : 'none';
+      });
+
+      updateSummary();
+    }
+
+    filters.forEach(id => document.getElementById(id)?.addEventListener('input', applyFilters));
+    window.addEventListener('DOMContentLoaded', updateSummary);
+  </script>
+
+  <script>
+    // Export table to CSV
+    document.querySelector('.btn-export').addEventListener('click', function() {
+      const table = document.getElementById('attendanceTable');
+      let csv = [];
+      for (let row of table.rows) {
+        let rowData = [];
+        for (let cell of row.cells) {
+          // Escape quotes
+          rowData.push('"' + cell.textContent.replace(/"/g, '""') + '"');
+        }
+        csv.push(rowData.join(','));
+      }
+      const csvContent = csv.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'attendance_records.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // Print table view
+    document.querySelector('.btn-print').addEventListener('click', function() {
+      const printContents = document.getElementById('attendanceTable').outerHTML;
+      const win = window.open('', '', 'height=700,width=900');
+      win.document.write('<html><head><title>Print Attendance</title>');
+      win.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">');
+      win.document.write('</head><body>');
+      win.document.write(printContents);
+      win.document.write('</body></html>');
+      win.document.close();
+      win.print();
+    });
+  </script>
+{% endblock %}

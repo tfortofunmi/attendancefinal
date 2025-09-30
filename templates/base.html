@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Attendance System{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  {% block stylesheet %}
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f8ff;
+    }
+
+    header.topbar {
+      background-color: #007BFF;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .wrapper {
+      display: flex;
+      overflow-x: auto;
+    }
+
+    .sidebar {
+      width: 200px;
+      background: #004AAD;
+      color: white;
+      height: 100vh;
+      padding-top: 20px;
+      position: fixed;
+      z-index: 1;
+    }
+
+    .sidebar a {
+      color: white;
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 5px 0;
+    }
+
+    .sidebar a:hover {
+      background: #0077b6;
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 200px;
+      padding: 20px;
+      background: #f0f8ff;
+      min-height: 100vh;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+  {% endblock %}
+
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <header class="topbar">
+    Attendance Management System
+  </header>
+
+  <div class="wrapper">
+    <aside class="sidebar">
+      {% block sidebar %}
+        <a href="{{ url_for('index') }}"><i class="fa fa-home"></i> Home</a>
+        <a href="{{ url_for('user.login') }}"><i class="fa fa-sign-in"></i> Login</a>
+      {% endblock %}
+    </aside>
+
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,175 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manage Courses{% endblock %}
+
+{% block content %}
+<style>
+    /* Headings */
+h2, h3, h4 {
+  color: #2c3e50;
+  margin-bottom: 12px;
+}
+
+/* Form Container */
+form {
+  background-color: #f8faff;
+  border: 1px solid #dce6f0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  max-width: 600px;
+}
+
+/* Form Inputs */
+form p {
+  margin-bottom: 15px;
+}
+
+form input[type="text"],
+form select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #bfcbd9;
+  font-size: 14px;
+}
+
+form input[type="submit"],
+form button {
+  padding: 10px 16px;
+  border-radius: 6px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+form input[type="submit"]:hover,
+form button:hover {
+  background-color: #1f618d;
+}
+
+/* Course Lists */
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul li {
+  background: #eef4fb;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+  font-size: 14px;
+}
+
+ul li strong {
+  display: block;
+  color: #2d3e50;
+  margin-bottom: 4px;
+}
+
+</style>
+<h2>Manage Courses</h2>
+
+<!-- Add New Course -->
+<h3>Add New Course</h3>
+<form method="post" action="{{ url_for('admin.manage_courses') }}">
+    {{ form.hidden_tag() }}
+    
+    <p>{{ form.course_name.label }}<br>{{ form.course_name(size=40) }}</p>
+    
+    <p>
+        {{ form.faculty_id.label }}<br>
+        <select name="faculty_id" id="facultySelect" required>
+            <option value="">-- Select Faculty --</option>
+            {% for faculty in faculties %}
+                <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    
+    <p>
+        {{ form.department_id.label }}<br>
+        <select name="department_id" id="departmentSelect" required>
+            <option value="">-- Select Department --</option>
+            {% for dept in departments %}
+                <option value="{{ dept.id }}" data-faculty="{{ dept.faculty_id }}">{{ dept.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    
+    <p>
+        {{ form.lecturer_id.label }}<br>
+        <select name="lecturer_id" id="lecturerSelect" required>
+            <option value="">-- Select Lecturer --</option>
+            {% for lecturer in lecturers %}
+                <option value="{{ lecturer.id }}" data-department="{{ lecturer.department_id }}">{{ lecturer.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    
+    <p>{{ form.semester_id.label }}<br>{{ form.semester_id() }}</p>
+    <p>{{ form.submit() }}</p>
+</form>
+
+<hr>
+
+<!-- Existing Courses Display -->
+<h3>Existing Courses</h3>
+{% for dept in departments %}
+  <h4>{{ dept.name }} (Faculty: {{ dept.faculty.name }})</h4>
+  <ul>
+    {% for course in dept.courses %}
+      <li>
+        <strong>{{ course.name }}</strong><br>
+        Lecturer: {{ course.lecturer.name if course.lecturer else "Unassigned" }}<br>
+        Semester: {{ course.semester.name if course.semester else "N/A" }}
+      </li>
+    {% else %}
+      <li><em>No courses yet in this department.</em></li>
+    {% endfor %}
+  </ul>
+{% endfor %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const facultySelect = document.getElementById('facultySelect');
+    const departmentSelect = document.getElementById('departmentSelect');
+    const lecturerSelect = document.getElementById('lecturerSelect');
+
+    const allDeptOptions = Array.from(departmentSelect.options);
+    const allLecturerOptions = Array.from(lecturerSelect.options);
+    departmentSelect.innerHTML = '<option value="">-- Select Department --</option>';
+    lecturerSelect.innerHTML = '<option value="">-- Select Lecturer --</option>';
+
+    // Faculty -> Departments
+    facultySelect.addEventListener('change', function() {
+        const selectedFaculty = this.value;
+
+        departmentSelect.innerHTML = '<option value="">-- Select Department --</option>';
+        allDeptOptions.forEach(option => {
+            if (option.getAttribute('data-faculty') === selectedFaculty) {
+                departmentSelect.appendChild(option.cloneNode(true));
+            }
+        });
+
+        lecturerSelect.innerHTML = '<option value="">-- Select Lecturer --</option>';
+    });
+
+    // Department -> Lecturers
+    departmentSelect.addEventListener('change', function() {
+        const selectedDept = this.value;
+
+        lecturerSelect.innerHTML = '<option value="">-- Select Lecturer --</option>';
+        allLecturerOptions.forEach(option => {
+            if (option.getAttribute('data-department') === selectedDept) {
+                lecturerSelect.appendChild(option.cloneNode(true));
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

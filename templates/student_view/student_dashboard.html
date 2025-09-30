@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/studentdashboard.css') }}">
+{% endblock %}
+
+{% block sidebar %}
+  <a href="{{ url_for('user.dashboard') }}"><i class="fa fa-windows"></i> Dashboard</a>
+  <a href="{{ url_for('user.attendance_record') }}"><i class="fa fa-eye"></i> Attendance Records</a>
+  <a href="{{ url_for('user.notifications') }}"><i class="fa fa-signal"></i> Notifications</a>
+  <a href="{{ url_for('user.settings') }}"><i class="fa fa-cog"></i> Settings</a>
+{% endblock %}
+
+{% block topbar %}
+<nav class="navbar sticky-top" id="topbar">
+  <div><strong>My Attendance</strong></div>
+  <div>
+    <span id="greeting">Hi, {{ user.name }}!</span> |
+    <span id="role">{{ user.role }}</span> |
+    <a href="{{ url_for('logout') }}" style="color: #90e0ef;">Logout</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="col-12 col-md-9 main">
+      <div id="intro" class="p-4">
+        <h2 class="fw-bold text-center">Welcome back, {{ user.name }}!</h2>
+        <p class="text-center">Today is {{ current_date }}</p>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="row cards mt-4">
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="card custom-card p-3">
+            <h4>Total Classes Attended:</h4>
+            <p>{{ stats.attended }}</p>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="card custom-card p-3">
+            <h4>Total Classes Missed:</h4>
+            <p>{{ stats.missed }}</p>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="card custom-card p-3">
+            <h4>Attendance Percentage:</h4>
+            <p>{{ stats.percentage }}%</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Classes Table -->
+      <div class="card mt-4">
+        <h3 class="p-3">Today's Classes</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Course Code</th>
+              <th>Title</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cls in classes %}
+            <tr>
+              <td>{{ cls.course_code }}</td>
+              <td>{{ cls.title }}</td>
+              <td>{{ cls.time }}</td>
+              <td>
+                {% set record = cls.attendance_for_student(user.id) %}
+                {{ record.status if record else 'Not Marked' }}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Lecturer-Student List{% endblock %}
+
+{% block content %}
+<style>
+    /* Page heading */
+h2 {
+  color: #2c3e50;
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+/* Lecturer section */
+h3 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #34495e;
+  font-size: 20px;
+}
+
+/* Section labels */
+p {
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  color: #2e4053;
+}
+
+/* Styled list */
+ul {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+ul li {
+  background: #f2f8ff;
+  border-left: 4px solid #3498db;
+  padding: 8px 12px;
+  border-radius: 5px;
+  margin-bottom: 6px;
+  font-size: 14.5px;
+  color: #34495e;
+}
+
+/* Divider */
+hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 30px 0;
+}
+
+</style>
+<h2>Lecturer-Student List</h2>
+{% for lecturer in lecturers %}
+    <h3>{{ lecturer.name }} ({{ lecturer.department.name }})</h3>
+    <p>Courses Assigned:</p>
+    <ul>
+        {% for course in lecturer.courses %}
+        <li>{{ course.name }}</li>
+        {% endfor %}
+    </ul>
+
+    <p>Students Enrolled:</p>
+    <ul>
+        {% for student in lecturer.students %}
+        <li>{{ student.name }} ({{ student.student_number }})</li>
+        {% endfor %}
+    </ul>
+    <hr>
+{% endfor %}
+{% endblock %}

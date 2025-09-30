@@ -1,0 +1,29 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Assign Course{% endblock %}
+
+{% block content %}
+<h2>Assign Course to Lecturer</h2>
+<form method="post">
+    <label>Department:</label><br>
+    <select name="department_id" required onchange="this.form.submit()">
+        <option value="">-- Select --</option>
+        {% for dept in departments %}
+        <option value="{{ dept.id }}" {% if selected_department and dept.id == selected_department.id %}selected{% endif %}>{{ dept.name }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    {% if lecturers %}
+    <label>Lecturer:</label><br>
+    <select name="lecturer_id" required>
+        {% for lecturer in lecturers %}
+        <option value="{{ lecturer.id }}">{{ lecturer.name }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label>Course Name:</label><br>
+    <input type="text" name="course_name" required><br><br>
+
+    <button type="submit" name="action" value="assign_course">Assign Course</button>
+    {% endif %}
+</form>
+{% endblock %}

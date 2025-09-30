@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Login</title>
+    <style>
+       
+        * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #e1e3e6, #2a5298);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 40px 30px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            width: 350px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 26px;
+            background: linear-gradient(to right, #1b5c6a, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #eee;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 18px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: #0b98b7;
+            color: #fff;
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #50c6e1;
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="form-wrapper">
+    <h2>Admin Login</h2>
+
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.email.label }}<br>
+        {{ form.email(size=32) }}<br><br>
+        {{ form.password.label }}<br>
+        {{ form.password(size=32) }}<br><br>
+        <button type="submit">Login</button>
+    </form></div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <style>
+        
+        
+        main { padding: 20px; }
+
+       
+       * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            color: #2c3e50;
+        }
+
+        header {
+            background: #2c7eb1;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 26px;
+            letter-spacing: 1px;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: #dfe6e9;
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+
+        nav a:hover {
+            background: #c9e2f1a8;
+        }
+
+        main {
+            padding: 40px 20px;
+            max-width: 1100px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+        <nav>
+            <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin.create_super_admin') }}">Create Super Admin</a>
+            <a href="{{ url_for('admin.manage_students') }}">Manage Students</a>
+            <a href="{{ url_for('admin.manage_lecturers') }}">Manage Lecturers</a>
+            <a href="{{ url_for('admin.manage_departments') }}">Manage Departments</a>
+            <a href="{{ url_for('admin.manage_faculties') }}">Manage Faculties</a>
+            <a href="{{ url_for('admin.manage_courses') }}">Manage Courses</a>
+            <a href="{{ url_for('admin.lecturer_students') }}">Lecturer Students</a>
+            <a href="{{ url_for('admin.logout') }}">Logout</a>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

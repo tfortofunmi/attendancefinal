@@ -1,0 +1,65 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-container {
+        padding: 30px;
+        background: linear-gradient(120deg, #709dca, #d9e2ec);
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        max-width: 700px;
+        margin: 40px auto;
+    }
+
+    .dashboard-container h2 {
+        font-size: 28px;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .dashboard-container p {
+        font-size: 16px;
+        color: #555;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .stats-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        text-decoration: none;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .stats-list li {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        transition: transform 0.2s ease;
+    }
+
+    .stats-list li:hover {
+        transform: translateY(-5px);
+    }
+</style>
+<div class="dashboard-container">
+<h2>Welcome, Super Admin</h2>
+<p>Quick overview:</p>
+<ul>
+    <li>Total Students: {{ total_students }}</li>
+    <li>Total Lecturers: {{ total_lecturers }}</li>
+    <li>Total Departments: {{ total_departments }}</li>
+    <li>Total Courses: {{ total_courses }}</li>
+</ul>
+</div>
+{% endblock %}

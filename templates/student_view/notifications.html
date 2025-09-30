@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Notifications</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <!-- Bootstrap JavaScript Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybRbf6fNV8dD4rPw68brgYX56bQk6lhk15TO9yNRO0jHq6nXz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="/attendance-system/css/studentdashboard.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f4f9ff; margin: 0; display: flex; }
+    .sidebar {
+      width: 200px;
+      background: #023e8a; 
+      color: white;
+      padding: 20px;
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover { background: #0077b6; }
+
+    .main { flex: 1; padding: 20px; overflow-y: auto; }
+    .topbar { font-size: 1.5rem; font-weight: 600; margin-bottom: 20px; color: #0d6efd; }
+    .notification {
+      background: white;
+      padding: 15px;
+      border-left: 6px solid #0d6efd;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+    .notification .title { font-weight: 600; color: #333; }
+    .notification .time { font-size: 0.85rem; color: #666; }
+    .notification button {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .notification button:hover { background: darkred; }
+  </style>
+</head>
+<body>
+  <div class="col-12 col-md-3 sidebar">
+   <a href="{{ url_for('user.dashboard') }}"><i class="fa fa-windows"></i> Dashboard</a>
+  <a href="{{ url_for('user.attendance_record') }}"><i class="fa fa-eye"></i> Attendance Records</a>
+  <a href="{{ url_for('user.notifications') }}"><i class="fa fa-signal"></i> Notifications</a>
+  <a href="{{ url_for('user.settings') }}"><i class="fa fa-cog"></i> Settings</a>
+  </div>
+
+  <div class="main">
+    <div class="topbar">📧 Notifications</div>
+    <div id="notifications"></div>
+  </div>
+
+  <script>
+    const studentNotifications = [
+      { id: 1, title: "Class moved to 10am tomorrow", time: "1 hour ago" },
+      { id: 2, title: "New attendance record posted", time: "Today" },
+      { id: 3, title: "Health Center awareness program on Friday", time: "Yesterday" }
+    ];
+
+    const notifContainer = document.getElementById("notifications");
+    const dismissed = JSON.parse(localStorage.getItem("dismissedStudentNotifs") || "[]");
+
+    function renderNotifications() {
+      notifContainer.innerHTML = '';
+      studentNotifications.forEach(n => {
+        if (!dismissed.includes(n.id)) {
+          const div = document.createElement("div");
+          div.className = "notification";
+          div.innerHTML = `
+            <div class="title">${n.title}</div>
+            <div class="time">${n.time}</div>
+            <button onclick="dismissNotif(${n.id})">Mark as Read</button>
+          `;
+          notifContainer.appendChild(div);
+        }
+      });
+    }
+
+    function dismissNotif(id) {
+      dismissed.push(id);
+      localStorage.setItem("dismissedStudentNotifs", JSON.stringify(dismissed));
+      renderNotifications();
+    }
+
+    renderNotifications();
+  </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Lecturer Dashboard{% endblock %}
+
+{% block head %}
+<style>
+  :root {
+    --primary-blue: #004AAD;
+    --hover-blue: rgb(51, 152, 219);
+    --white: #fff;
+    --text-dark: #2c3e50;
+    --bg-light: #f4faff;
+    --card-shadow: rgba(0, 0, 0, 0.05);
+  }
+
+  .dashboard {
+    max-width: 1100px;
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .card {
+    background-color: var(--white);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 20px var(--card-shadow);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    background-color: #eaf4fd;
+    transform: translateY(-4px);
+  }
+
+  .card h3 {
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+  }
+
+  .card p {
+    font-size: 0.95rem;
+    color: #555;
+  }
+
+  .logout-btn a {
+    text-decoration: none;
+    color: var(--primary-blue);
+  }
+
+</style>
+{% endblock %}
+
+{% block sidebar %}
+  <a href="{{ url_for('user.dashboard') }}"><i class="fa fa-windows"></i> Dashboard</a>
+  <a href="{{ url_for('user.mark_attendance') }}"><i class="fa fa-check-circle-o"></i> Mark Attendance</a>
+  <a href="{{ url_for('user.attendance_record') }}"><i class="fa fa-eye"></i> Attendance Records</a>
+  <a href="{{ url_for('user.student_list') }}"><i class="fa fa-list-ul"></i> Students List</a>
+  <a href="{{ url_for('user.notifications') }}"><i class="fa fa-signal"></i> Notifications</a>
+  <a href="{{ url_for('user.settings') }}"><i class="fa fa-cog"></i> Settings</a>
+{% endblock %}
+
+{% block content %}
+  <div class="dashboard">
+    <a href="{{ url_for('user.create_class') }}">
+      <div class="card">
+        <h3>Create Class</h3>
+        <p>Schedule a new class for students</p>
+      </div>
+    </a>
+    <div class="card">
+      <a href="{{ url_for('user.mark_attendance') }}">
+        <h3>Mark Attendance</h3>
+        <p>Record student attendance for classes</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="{{ url_for('user.attendance_record') }}">
+        <h3>Attendance Records</h3>
+        <p>View & export student attendance data</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="{{ url_for('user.student_list') }}">
+        <h3>Student List</h3>
+        <p>Browse students by department and level</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="{{ url_for('user.settings') }}">
+        <h3>Settings</h3>
+        <p>Change theme, access level, and preferences</p>
+      </a>
+    </div>
+  </div>
+{% endblock %}

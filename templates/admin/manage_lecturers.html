@@ -1,0 +1,153 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manage Lecturers{% endblock %}
+
+{% block content %}
+<style>
+h2, h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* Form Styling */
+form {
+    background: #f9f9f9;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+form p {
+    margin-bottom: 15px;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form select {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form input[type="submit"] {
+    background: #0066cc;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background: #004c99;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+table th,
+table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table th {
+    background-color: #0066cc;
+    color: white;
+    font-weight: 500;
+}
+
+table tr:hover {
+    background-color: #f2f9ff;
+}
+</style>
+<h2>Manage Lecturers</h2>
+
+<!-- Add New Lecturer -->
+<h3>Add New Lecturer</h3>
+<form method="post" action="{{ url_for('admin.manage_lecturers') }}">
+    {{ form.hidden_tag() }}
+    <p>{{ form.name.label }}<br>{{ form.name(size=40) }}</p>
+    <p>{{ form.email.label }}<br>{{ form.email(size=40) }}</p>
+    <p>{{ form.password.label }}<br>{{ form.password(size=40) }}</p>
+    <p>{{ form.staff_number.label }}<br>{{ form.staff_number(size=40) }}</p>
+    
+    <p>
+        {{ form.faculty_id.label }}<br>
+        <select name="faculty_id" id="facultySelect" required>
+            <option value="">-- Select Faculty --</option>
+            {% for faculty in faculties %}
+                <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <p>
+        {{ form.department_id.label }}<br>
+        <select name="department_id" id="departmentSelect">
+            <option value="">-- Select Department --</option>
+            {% for dept in departments %}
+                <option value="{{ dept.id }}" data-faculty="{{ dept.faculty_id }}">{{ dept.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <p>{{ form.submit() }}</p>
+</form>
+
+<hr>
+
+<!-- List All Lecturers -->
+<h3>Existing Lecturers</h3>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Staff Number</th>
+        <th>Faculty</th>
+        <th>Department</th>
+    </tr>
+    {% for lecturer in lecturers %}
+    <tr>
+        <td>{{ lecturer.name }}</td>
+        <td>{{ lecturer.email }}</td>
+        <td>{{ lecturer.staff_number }}</td>
+        <td>{{ lecturer.faculty.name if lecturer.faculty else "N/A" }}</td>
+        <td>{{ lecturer.department.name if lecturer.department else "N/A" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const facultySelect = document.getElementById('facultySelect');
+        const departmentSelect = document.getElementById('departmentSelect');
+        const allOptions = Array.from(departmentSelect.options);
+        departmentSelect.innerHTML = '<option value="">-- Select Department --</option>';
+
+        facultySelect.addEventListener('change', function() {
+            const selectedFaculty = this.value;
+            departmentSelect.innerHTML = '<option value="">-- Select Department --</option>';
+
+            allOptions.forEach(option => {
+                if (option.getAttribute('data-faculty') === selectedFaculty) {
+                    departmentSelect.appendChild(option.cloneNode(true));
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
